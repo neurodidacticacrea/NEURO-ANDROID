@@ -30,3 +30,9 @@ Auto-start after reboot is OFF by default. It only activates after the user expl
 
 ## Backend
 The APK contains no OpenAI key. Online AI must use an HTTPS backend. Cleartext HTTP traffic is disabled.
+
+
+## Wake word “NEURO”
+The wake-word service is opt-in and uses Android's on-device speech recognizer when available.
+A persistent notification is always shown while the microphone listener is running.
+The secure beta does not silently fall back to cloud speech recognition when on-device recognition is unavailable.

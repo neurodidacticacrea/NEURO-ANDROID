@@ -224,6 +224,25 @@ class MainActivity : AppCompatActivity() {
         }
         root.addView(privateMode)
 
+
+        val wakeWord = Switch(this).apply {
+            text = "Activar con la palabra “NEURO”"
+            setTextColor(Color.WHITE)
+            isChecked = SecurityPreferences.isWakeWordEnabled(this@MainActivity)
+            setOnCheckedChangeListener { _, checked ->
+                setWakeWord(checked)
+            }
+        }
+        root.addView(wakeWord)
+
+        val wakeInfo = TextView(this).apply {
+            text = "Cuando esté activado verás una notificación permanente del micrófono. En Android compatible, la detección se realiza en el dispositivo. Si tu teléfono no ofrece reconocimiento local, NEURO no activará este modo en vez de enviar audio a la nube."
+            setTextColor(Color.rgb(190, 175, 210))
+            textSize = 12f
+            setPadding(0, 4, 0, 8)
+        }
+        root.addView(wakeInfo)
+
         val alwaysAvailable = Switch(this).apply {
             text = "Siempre disponible después de reiniciar"
             setTextColor(Color.WHITE)
@@ -326,6 +345,41 @@ class MainActivity : AppCompatActivity() {
         status.text = "● FLOTANTE DETENIDO"
         response.text = "El cerebro flotante fue detenido."
         Toast.makeText(this, "NEURO flotante detenido", Toast.LENGTH_SHORT).show()
+    }
+
+
+    private fun setWakeWord(enabled: Boolean) {
+        if (enabled) {
+            if (
+                ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.RECORD_AUDIO
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                Toast.makeText(
+                    this,
+                    "Concede primero el permiso de micrófono.",
+                    Toast.LENGTH_LONG
+                ).show()
+                requestPermissions(arrayOf(Manifest.permission.RECORD_AUDIO), 100)
+                return
+            }
+
+            SecurityPreferences.setWakeWordEnabled(this, true)
+            ContextCompat.startForegroundService(
+                this,
+                Intent(this, WakeWordService::class.java)
+            )
+            Toast.makeText(
+                this,
+                "Di “NEURO” para activarme.",
+                Toast.LENGTH_LONG
+            ).show()
+        } else {
+            SecurityPreferences.setWakeWordEnabled(this, false)
+            stopService(Intent(this, WakeWordService::class.java))
+            Toast.makeText(this, "Palabra de activación desactivada.", Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun requestRuntimePermissions() {

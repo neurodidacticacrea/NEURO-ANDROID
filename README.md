@@ -1,25 +1,31 @@
-# NEURO Android 0.2.1 — Float Fix
+# NEURO Android 0.2.2 — Wake Word
 
-Esta versión corrige el arranque del cerebro flotante en Android recientes.
+## Nueva función
+NEURO puede activarse cuando dices:
 
-## Cambio principal
-El servicio flotante ya NO se declara como servicio de micrófono. El micrófono sólo se usa cuando el usuario inicia reconocimiento de voz.
+**“NEURO”**
 
-## Cómo probar
-1. Instala la app.
-2. Abre NEURO.
-3. Pulsa `🧠 Activar flotante`.
-4. Si Android abre ajustes, activa `Mostrar sobre otras apps`.
-5. Regresa a NEURO.
-6. Pulsa otra vez `🧠 Activar flotante`.
-7. Debe aparecer:
-   - el cerebro en la zona superior izquierda
-   - una notificación persistente: `NEURO flotante activo`
-
-## Si no aparece
-- Verifica Ajustes > Apps > Acceso especial > Mostrar sobre otras apps > NEURO.
-- Verifica que la notificación `NEURO flotante activo` exista.
-- En algunos fabricantes puede ser necesario permitir ejecución en segundo plano/batería sin restricciones.
+Al detectarlo:
+1. aparece el cerebro flotante,
+2. NEURO responde “Sí”,
+3. abre el panel,
+4. queda listo para escuchar la siguiente orden.
 
 ## Seguridad
-El overlay sigue siendo sólo visual/táctil. No usa Accessibility ni lee contenido de otras apps.
+- La función está apagada por defecto.
+- Requiere tu autorización explícita.
+- Mientras escucha, Android muestra una notificación permanente y su indicador de micrófono.
+- En Android 12+ se intenta usar reconocimiento **en el dispositivo**.
+- Si el dispositivo no ofrece reconocimiento local, esta versión NO cae automáticamente a reconocimiento en la nube.
+- Puedes detener la escucha desde la notificación o desde NEURO.
+
+## Activación
+1. Abre NEURO.
+2. Concede permiso de micrófono.
+3. Activa `Activar con la palabra “NEURO”`.
+4. Sal de la app.
+5. Di `NEURO`.
+
+## Requisito adicional
+Para que el cerebro pueda aparecer encima de otras apps, activa también:
+`Mostrar sobre otras apps`.
