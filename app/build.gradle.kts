@@ -11,8 +11,8 @@ android {
         applicationId = "com.neurodidactica.neuro"
         minSdk = 26
         targetSdk = 35
-        versionCode = 3
-        versionName = "0.2.0-beta"
+        versionCode = 4
+        versionName = "0.2.1-float-fix"
 
         val apiUrl = project.findProperty("NEURO_API_URL")?.toString()
             ?: "https://example.com/api/neuro"

@@ -4,8 +4,6 @@ import android.app.*
 import android.content.*
 import android.graphics.PixelFormat
 import android.os.Build
-import android.os.Handler
-import android.os.Looper
 import android.provider.Settings
 import android.view.*
 import android.widget.ImageView
@@ -13,6 +11,11 @@ import androidx.core.app.NotificationCompat
 import kotlin.math.abs
 
 class FloatingNeuroService : Service() {
+
+    companion object {
+        const val ACTION_STOP = "com.neurodidactica.neuro.STOP_FLOATING"
+    }
+
     private lateinit var windowManager: WindowManager
     private var brain: ImageView? = null
 
@@ -21,13 +24,18 @@ class FloatingNeuroService : Service() {
         createChannel()
         startForeground(77, buildNotification())
 
-        if (!Settings.canDrawOverlays(this)) return
+        if (!Settings.canDrawOverlays(this)) {
+            stopSelf()
+            return
+        }
 
         windowManager = getSystemService(WINDOW_SERVICE) as WindowManager
+
         val img = ImageView(this).apply {
             setImageResource(R.drawable.neuro_brain)
-            alpha = 0.96f
+            alpha = 1f
             contentDescription = "NEURO flotante"
+            setPadding(6, 6, 6, 6)
         }
         brain = img
 
@@ -37,14 +45,16 @@ class FloatingNeuroService : Service() {
             WindowManager.LayoutParams.TYPE_PHONE
 
         val params = WindowManager.LayoutParams(
-            190, 190, type,
+            220,
+            220,
+            type,
             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
-            WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL,
+                    WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL,
             PixelFormat.TRANSLUCENT
         ).apply {
             gravity = Gravity.TOP or Gravity.START
-            x = 20
-            y = 250
+            x = 24
+            y = 300
         }
 
         var downX = 0f
@@ -69,7 +79,7 @@ class FloatingNeuroService : Service() {
                     moved = abs(dx) + abs(dy) > 12
                     params.x = startX + dx
                     params.y = startY + dy
-                    windowManager.updateViewLayout(img, params)
+                    runCatching { windowManager.updateViewLayout(img, params) }
                     true
                 }
                 MotionEvent.ACTION_UP -> {
@@ -77,12 +87,13 @@ class FloatingNeuroService : Service() {
                         val now = System.currentTimeMillis()
                         val last = img.getTag(android.R.id.custom) as? Long ?: 0L
                         img.setTag(android.R.id.custom, now)
+
                         val launch = packageManager.getLaunchIntentForPackage(packageName)
                         if (now - last < 420L) {
                             launch?.putExtra("AUTO_LISTEN", true)
                         }
                         launch?.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                        startActivity(launch)
+                        if (launch != null) startActivity(launch)
                     }
                     true
                 }
@@ -90,25 +101,42 @@ class FloatingNeuroService : Service() {
             }
         }
 
-        img.animate().scaleX(1.06f).scaleY(1.06f).setDuration(850).withEndAction {
-            pulse(img)
-        }.start()
-
         windowManager.addView(img, params)
+        pulse(img)
+    }
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        if (intent?.action == ACTION_STOP) {
+            stopSelf()
+            return START_NOT_STICKY
+        }
+        return START_STICKY
     }
 
     private fun pulse(v: ImageView) {
-        v.animate().scaleX(0.98f).scaleY(0.98f).alpha(0.9f).setDuration(900).withEndAction {
-            v.animate().scaleX(1.06f).scaleY(1.06f).alpha(1f).setDuration(900).withEndAction {
-                v.post { pulse(v) }
+        v.animate()
+            .scaleX(1.08f)
+            .scaleY(1.08f)
+            .alpha(0.92f)
+            .setDuration(900)
+            .withEndAction {
+                v.animate()
+                    .scaleX(1f)
+                    .scaleY(1f)
+                    .alpha(1f)
+                    .setDuration(900)
+                    .withEndAction { v.post { pulse(v) } }
+                    .start()
             }.start()
-        }.start()
     }
 
     override fun onDestroy() {
         brain?.let {
-            if (::windowManager.isInitialized) runCatching { windowManager.removeView(it) }
+            if (::windowManager.isInitialized) {
+                runCatching { windowManager.removeView(it) }
+            }
         }
+        brain = null
         super.onDestroy()
     }
 
@@ -116,27 +144,43 @@ class FloatingNeuroService : Service() {
 
     private fun createChannel() {
         if (Build.VERSION.SDK_INT >= 26) {
-            val c = NotificationChannel(
+            val channel = NotificationChannel(
                 "neuro_core",
                 "NEURO activo",
                 NotificationManager.IMPORTANCE_LOW
             )
-            getSystemService(NotificationManager::class.java).createNotificationChannel(c)
+            channel.description = "Mantiene visible el cerebro flotante de NEURO."
+            getSystemService(NotificationManager::class.java)
+                .createNotificationChannel(channel)
         }
     }
 
     private fun buildNotification(): Notification {
-        val pending = PendingIntent.getActivity(
-            this, 0,
-            packageManager.getLaunchIntentForPackage(packageName),
+        val openIntent = packageManager.getLaunchIntentForPackage(packageName)
+        val openPending = PendingIntent.getActivity(
+            this,
+            0,
+            openIntent,
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
+
+        val stopIntent = Intent(this, FloatingNeuroService::class.java).apply {
+            action = ACTION_STOP
+        }
+        val stopPending = PendingIntent.getService(
+            this,
+            1,
+            stopIntent,
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
+        )
+
         return NotificationCompat.Builder(this, "neuro_core")
             .setSmallIcon(R.mipmap.ic_launcher)
-            .setContentTitle("NEURO está activo")
-            .setContentText("Tu inteligencia personal está disponible.")
+            .setContentTitle("NEURO flotante activo")
+            .setContentText("El cerebro está disponible sobre otras apps.")
             .setOngoing(true)
-            .setContentIntent(pending)
+            .setContentIntent(openPending)
+            .addAction(0, "Detener", stopPending)
             .build()
     }
 }

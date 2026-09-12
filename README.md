@@ -1,34 +1,25 @@
-# NEURO Android 0.2 Beta
+# NEURO Android 0.2.1 — Float Fix
 
-## Novedades
-- Cerebro flotante animado.
-- Doble toque sobre el cerebro: abre NEURO y activa escucha.
-- Acciones rápidas.
-- Rutinas locales:
-  - Buenos días
-  - Trabajo
-  - Conducción
-  - Dormir
-- Temporizadores por voz.
-- Historial local de hasta 30 órdenes.
-- Centro de actualizaciones preparado.
-- Modo privado activado por defecto.
-- Bloqueo de operaciones financieras y borrado silencioso.
-- Backend de IA separado del APK.
+Esta versión corrige el arranque del cerebro flotante en Android recientes.
 
-## Compilar
-Usa `.github/workflows/build-apk.yml`.
+## Cambio principal
+El servicio flotante ya NO se declara como servicio de micrófono. El micrófono sólo se usa cuando el usuario inicia reconocimiento de voz.
 
-Artifact esperado:
-`NEURO-SECURE-APK`
+## Cómo probar
+1. Instala la app.
+2. Abre NEURO.
+3. Pulsa `🧠 Activar flotante`.
+4. Si Android abre ajustes, activa `Mostrar sobre otras apps`.
+5. Regresa a NEURO.
+6. Pulsa otra vez `🧠 Activar flotante`.
+7. Debe aparecer:
+   - el cerebro en la zona superior izquierda
+   - una notificación persistente: `NEURO flotante activo`
 
-APK:
-`NEURO-SECURE-BETA.apk`
+## Si no aparece
+- Verifica Ajustes > Apps > Acceso especial > Mostrar sobre otras apps > NEURO.
+- Verifica que la notificación `NEURO flotante activo` exista.
+- En algunos fabricantes puede ser necesario permitir ejecución en segundo plano/batería sin restricciones.
 
-## Próxima fase
-- Conectar IA conversacional segura.
-- Calendario real.
-- Contactos por selección segura.
-- Música por búsqueda.
-- Organización de fotos con confirmación Android.
-- Autoactualización con GitHub Releases.
+## Seguridad
+El overlay sigue siendo sólo visual/táctil. No usa Accessibility ni lee contenido de otras apps.

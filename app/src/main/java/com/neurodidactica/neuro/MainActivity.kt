@@ -128,9 +128,14 @@ class MainActivity : AppCompatActivity() {
             text = "🧠 Activar flotante"
             setOnClickListener { enableFloating() }
         }
+        val stopFloatBtn = Button(this).apply {
+            text = "✕ Detener"
+            setOnClickListener { stopFloating() }
+        }
         row.addView(talk)
         row.addView(run)
         row.addView(floatBtn)
+        row.addView(stopFloatBtn)
         root.addView(row)
 
         response = TextView(this).apply {
@@ -235,7 +240,7 @@ class MainActivity : AppCompatActivity() {
         root.addView(alwaysAvailable)
 
         val securityInfo = TextView(this).apply {
-            text = "NEURO no usa Accesibilidad, no lee SMS, contactos, registros de llamadas ni contenido de otras apps. El cerebro flotante sólo se dibuja encima y recibe toques dentro de su icono. Doble toque al cerebro: abre NEURO y activa escucha."
+            text = "NEURO no usa Accesibilidad ni lee el contenido de otras apps. Si el cerebro no aparece, verifica que “Mostrar sobre otras apps” esté activado. Al iniciar correctamente verás una notificación permanente: “NEURO flotante activo”."
             setTextColor(Color.rgb(190, 175, 210))
             textSize = 12f
             setPadding(0, 8, 0, 8)
@@ -290,18 +295,37 @@ class MainActivity : AppCompatActivity() {
 
     private fun enableFloating() {
         if (!Settings.canDrawOverlays(this)) {
-            startActivity(Intent(
-                Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                Uri.parse("package:$packageName")
-            ))
-            Toast.makeText(this, "Activa “Mostrar sobre otras apps” y vuelve a NEURO.", Toast.LENGTH_LONG).show()
+            Toast.makeText(
+                this,
+                "Primero activa “Permitir mostrar sobre otras apps” para NEURO.",
+                Toast.LENGTH_LONG
+            ).show()
+            startActivity(
+                Intent(
+                    Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                    Uri.parse("package:$packageName")
+                )
+            )
             return
         }
-        ContextCompat.startForegroundService(
+
+        val serviceIntent = Intent(this, FloatingNeuroService::class.java)
+        ContextCompat.startForegroundService(this, serviceIntent)
+
+        status.text = "● FLOTANTE ACTIVO"
+        response.text = "El cerebro flotante de NEURO está activo. Busca el cerebro en el lado superior izquierdo de la pantalla."
+        Toast.makeText(
             this,
-            Intent(this, FloatingNeuroService::class.java)
-        )
-        Toast.makeText(this, "NEURO flotante activado", Toast.LENGTH_SHORT).show()
+            "NEURO flotante activado",
+            Toast.LENGTH_LONG
+        ).show()
+    }
+
+    private fun stopFloating() {
+        stopService(Intent(this, FloatingNeuroService::class.java))
+        status.text = "● FLOTANTE DETENIDO"
+        response.text = "El cerebro flotante fue detenido."
+        Toast.makeText(this, "NEURO flotante detenido", Toast.LENGTH_SHORT).show()
     }
 
     private fun requestRuntimePermissions() {
