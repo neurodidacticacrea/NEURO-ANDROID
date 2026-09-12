@@ -1,0 +1,28 @@
+{
+  "product": "NEURO",
+  "brand": "Neurodidáctica",
+  "package": "com.neurodidactica.neuro",
+  "version": "0.1.0-beta",
+  "core": [
+    "floating animated brain",
+    "speech recognition",
+    "text to speech",
+    "command router",
+    "secure AI backend integration"
+  ],
+  "planned": [
+    "conversation",
+    "memory",
+    "calendar",
+    "alarms",
+    "music",
+    "calls",
+    "photo albums",
+    "photo deletion with confirmation",
+    "contacts",
+    "navigation",
+    "routines",
+    "default assistant role",
+    "self-update center"
+  ]
+}

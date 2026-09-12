@@ -1,0 +1,7 @@
+<resources>
+    <color name="neuro_bg">#07020D</color>
+    <color name="neuro_purple">#7C2CFF</color>
+    <color name="neuro_magenta">#E43CFF</color>
+    <color name="neuro_cyan">#3AD7FF</color>
+    <color name="white">#FFFFFF</color>
+</resources>
