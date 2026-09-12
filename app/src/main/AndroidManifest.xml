@@ -1,13 +1,24 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Audio is only used when the user actively starts voice recognition. -->
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
+    <!-- Required solely for the user-enabled floating NEURO brain. -->
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+
+    <!-- Foreground notification/service keeps the user aware that NEURO is active. -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
+
+    <!-- Used only if the user explicitly enables "Always available". -->
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-    <uses-permission android:name="android.permission.CALL_PHONE" />
-    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
+
+    <!-- Needed for secure AI backend communication. No API key lives in the APK. -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- Deliberately NOT requested:
+         Accessibility, SMS, Contacts, Call Log, direct CALL_PHONE,
+         broad storage/media read, device admin, notification listener. -->
 
     <queries>
         <package android:name="com.whatsapp" />
@@ -17,7 +28,8 @@
     </queries>
 
     <application
-        android:allowBackup="true"
+        android:allowBackup="false"
+        android:usesCleartextTraffic="false"
         android:label="NEURO"
         android:icon="@mipmap/ic_launcher"
         android:theme="@style/Theme.Neuro">

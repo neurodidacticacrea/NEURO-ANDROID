@@ -1,28 +1,29 @@
 {
-  "product": "NEURO",
-  "brand": "Neurodidáctica",
-  "package": "com.neurodidactica.neuro",
-  "version": "0.1.0-beta",
-  "core": [
-    "floating animated brain",
-    "speech recognition",
-    "text to speech",
-    "command router",
-    "secure AI backend integration"
+  "version": "0.2.0-beta",
+  "added": [
+    "double tap floating brain to listen",
+    "quick actions",
+    "local routines",
+    "voice timers",
+    "local command history",
+    "update center skeleton"
   ],
-  "planned": [
-    "conversation",
-    "memory",
-    "calendar",
-    "alarms",
-    "music",
-    "calls",
-    "photo albums",
-    "photo deletion with confirmation",
-    "contacts",
-    "navigation",
-    "routines",
-    "default assistant role",
-    "self-update center"
+  "security": [
+    "private mode default on",
+    "no accessibility",
+    "no sms",
+    "no contacts",
+    "no call log",
+    "no broad media access",
+    "financial actions blocked",
+    "destructive actions require future system confirmation"
+  ],
+  "next": [
+    "secure AI backend",
+    "calendar integration",
+    "contacts safe picker",
+    "music search",
+    "photo album management",
+    "release-based self update"
   ]
 }

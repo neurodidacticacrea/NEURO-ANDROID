@@ -49,6 +49,9 @@ class MainActivity : AppCompatActivity() {
         }
         setContentView(buildUi())
         requestRuntimePermissions()
+        if (intent?.getBooleanExtra("AUTO_LISTEN", false) == true) {
+            status.postDelayed({ listen() }, 500)
+        }
     }
 
     private fun buildUi(): View {
@@ -122,7 +125,7 @@ class MainActivity : AppCompatActivity() {
             setOnClickListener { runCommand(commandInput.text.toString()) }
         }
         val floatBtn = Button(this).apply {
-            text = "🧠 Flotante"
+            text = "🧠 Activar flotante"
             setOnClickListener { enableFloating() }
         }
         row.addView(talk)
@@ -137,6 +140,107 @@ class MainActivity : AppCompatActivity() {
             setPadding(18, 24, 18, 12)
         }
         root.addView(response)
+
+
+        val quickTitle = TextView(this).apply {
+            text = "ACCIONES RÁPIDAS"
+            textSize = 14f
+            setTextColor(Color.rgb(58, 215, 255))
+            setPadding(0, 24, 0, 8)
+        }
+        root.addView(quickTitle)
+
+        val quickRow1 = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER
+        }
+        listOf(
+            "🎵 Música" to "abre Spotify",
+            "🗺️ Mapas" to "abre Maps",
+            "📅 Agenda" to "abre calendario"
+        ).forEach { (label, cmd) ->
+            quickRow1.addView(Button(this).apply {
+                text = label
+                setOnClickListener { runCommand(cmd) }
+            })
+        }
+        root.addView(quickRow1)
+
+        val quickRow2 = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            gravity = Gravity.CENTER
+        }
+        listOf(
+            "☀️ Mañana" to "buenos días",
+            "🚗 Conducir" to "modo conducción",
+            "🌙 Dormir" to "buenas noches"
+        ).forEach { (label, cmd) ->
+            quickRow2.addView(Button(this).apply {
+                text = label
+                setOnClickListener { runCommand(cmd) }
+            })
+        }
+        root.addView(quickRow2)
+
+        val historyBtn = Button(this).apply {
+            text = "🧾 Ver historial local"
+            setOnClickListener {
+                response.text = LocalHistory.text(this@MainActivity)
+            }
+        }
+        root.addView(historyBtn)
+
+        val updateBtn = Button(this).apply {
+            text = "⬆ Centro de actualizaciones"
+            setOnClickListener { UpdateCenter.open(this@MainActivity) }
+        }
+        root.addView(updateBtn)
+
+        val securityTitle = TextView(this).apply {
+            text = "SEGURIDAD Y PRIVACIDAD"
+            textSize = 14f
+            setTextColor(Color.rgb(228, 60, 255))
+            setPadding(0, 28, 0, 8)
+        }
+        root.addView(securityTitle)
+
+        val privateMode = Switch(this).apply {
+            text = "Modo privado (no enviar conversación a Internet)"
+            setTextColor(Color.WHITE)
+            isChecked = SecurityPreferences.isPrivateMode(this@MainActivity)
+            setOnCheckedChangeListener { _, checked ->
+                SecurityPreferences.setPrivateMode(this@MainActivity, checked)
+                Toast.makeText(
+                    this@MainActivity,
+                    if (checked) "Modo privado activado" else "IA en línea permitida",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+        root.addView(privateMode)
+
+        val alwaysAvailable = Switch(this).apply {
+            text = "Siempre disponible después de reiniciar"
+            setTextColor(Color.WHITE)
+            isChecked = SecurityPreferences.isAlwaysAvailable(this@MainActivity)
+            setOnCheckedChangeListener { _, checked ->
+                SecurityPreferences.setAlwaysAvailable(this@MainActivity, checked)
+                Toast.makeText(
+                    this@MainActivity,
+                    if (checked) "Persistencia 24/7 autorizada" else "Persistencia desactivada",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+        root.addView(alwaysAvailable)
+
+        val securityInfo = TextView(this).apply {
+            text = "NEURO no usa Accesibilidad, no lee SMS, contactos, registros de llamadas ni contenido de otras apps. El cerebro flotante sólo se dibuja encima y recibe toques dentro de su icono. Doble toque al cerebro: abre NEURO y activa escucha."
+            setTextColor(Color.rgb(190, 175, 210))
+            textSize = 12f
+            setPadding(0, 8, 0, 8)
+        }
+        root.addView(securityInfo)
 
         val hints = TextView(this).apply {
             text = """

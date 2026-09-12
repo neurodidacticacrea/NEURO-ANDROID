@@ -11,12 +11,11 @@ android {
         applicationId = "com.neurodidactica.neuro"
         minSdk = 26
         targetSdk = 35
-        versionCode = 1
-        versionName = "0.1.0-beta"
+        versionCode = 3
+        versionName = "0.2.0-beta"
 
         val apiUrl = project.findProperty("NEURO_API_URL")?.toString()
             ?: "https://example.com/api/neuro"
-
         buildConfigField("String", "NEURO_API_URL", "\"$apiUrl\"")
     }
 
@@ -34,13 +33,14 @@ android {
     }
 }
 
-kotlin {
-    jvmToolchain(17)
-}
-
 dependencies {
     implementation("androidx.core:core-ktx:1.15.0")
     implementation("androidx.appcompat:appcompat:1.7.0")
     implementation("androidx.activity:activity-ktx:1.10.0")
     implementation("com.google.android.material:material:1.12.0")
+}
+
+
+kotlin {
+    jvmToolchain(17)
 }

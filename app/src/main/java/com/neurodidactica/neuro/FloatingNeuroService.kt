@@ -4,6 +4,8 @@ import android.app.*
 import android.content.*
 import android.graphics.PixelFormat
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.provider.Settings
 import android.view.*
 import android.widget.ImageView
@@ -36,7 +38,8 @@ class FloatingNeuroService : Service() {
 
         val params = WindowManager.LayoutParams(
             190, 190, type,
-            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE,
+            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
+            WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL,
             PixelFormat.TRANSLUCENT
         ).apply {
             gravity = Gravity.TOP or Gravity.START
@@ -71,7 +74,13 @@ class FloatingNeuroService : Service() {
                 }
                 MotionEvent.ACTION_UP -> {
                     if (!moved) {
+                        val now = System.currentTimeMillis()
+                        val last = img.getTag(android.R.id.custom) as? Long ?: 0L
+                        img.setTag(android.R.id.custom, now)
                         val launch = packageManager.getLaunchIntentForPackage(packageName)
+                        if (now - last < 420L) {
+                            launch?.putExtra("AUTO_LISTEN", true)
+                        }
                         launch?.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                         startActivity(launch)
                     }
