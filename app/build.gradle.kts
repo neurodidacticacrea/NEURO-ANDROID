@@ -16,7 +16,13 @@ android {
 
         val apiUrl = project.findProperty("NEURO_API_URL")?.toString()
             ?: "https://example.com/api/neuro"
+
         buildConfigField("String", "NEURO_API_URL", "\"$apiUrl\"")
+    }
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     buildFeatures {
@@ -26,6 +32,10 @@ android {
     packaging {
         resources.excludes += "/META-INF/{AL2.0,LGPL2.1}"
     }
+}
+
+kotlin {
+    jvmToolchain(17)
 }
 
 dependencies {
